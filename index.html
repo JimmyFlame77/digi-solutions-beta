@@ -396,6 +396,17 @@
     }
     .btn-ghost:hover { background: var(--neon-dim); box-shadow: var(--neon-glow); }
 
+
+    .btn-danger {
+      background: linear-gradient(135deg, #5a0000, #cc0000);
+      color: #fff;
+      border: 1px solid rgba(255,60,60,0.65);
+      box-shadow: 0 0 8px rgba(255,40,40,0.7), 0 0 20px rgba(255,40,40,0.35);
+    }
+    .btn-danger:hover {
+      box-shadow: 0 0 14px rgba(255,40,40,0.9), 0 0 40px rgba(255,40,40,0.4);
+      transform: translateY(-1px);
+    }
     /* ── FORM ELEMENTS ── */
     .form-group { margin-bottom: 1rem; }
     .form-label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.4rem; }
@@ -643,6 +654,7 @@
           <button class="btn btn-primary" onclick="showPage('creative', document.querySelectorAll('aside .nav-btn')[1])">✦ Digi Creative</button>
           <button class="btn btn-primary" onclick="window.location.href='mailto:support@digi-solutions.com'">✉ Contact Digi</button>
           <button class="btn btn-primary" onclick="showPage('ticket', document.querySelectorAll('aside .nav-btn')[4])">◎ Submit Ticket</button>
+          <button class="btn btn-danger" onclick="handleLogout()">⏻ Log Out</button>
         </div>
       </div>
       <div class="neon-line"></div>
@@ -1269,6 +1281,14 @@
     alert('✓ Files submitted to Digi Solutions successfully!');
   }
 
+
+  /* ─── Logout ─────────────────────────────────────────────────────────── */
+  function handleLogout() {
+    if (confirm('Are you sure you want to log out?')) {
+      // Replace this URL with your actual logout endpoint or login page
+      window.location.href = '/logout';
+    }
+  }
   /* ─── Init ──────────────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', initCustomer);
 </script>
