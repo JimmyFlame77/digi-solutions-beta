@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digi Solutions | Customer Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:       #0a0c10;
+      --bg-panel:      #0d1117;
+      --bg-card:       #111820;
+      --bg-card-hover: #141e2a;
+      --neon:          #00c8ff;
+      --neon-dim:      rgba(0,200,255,0.15);
+      --neon-glow:     0 0 8px rgba(0,200,255,0.7), 0 0 20px rgba(0,200,255,0.35);
+      --neon-glow-lg:  0 0 14px rgba(0,200,255,0.9), 0 0 40px rgba(0,200,255,0.4);
+      --text-primary:  #e8f4f8;
+      --text-secondary:#7a9bb0;
+      --text-muted:    #3d5a6e;
+      --border:        rgba(0,200,255,0.18);
+      --border-active: rgba(0,200,255,0.65);
+      --radius:        10px;
+      --radius-lg:     16px;
+      --font:          'Segoe UI', system-ui, -apple-system, sans-serif;
+      --transition:    0.22s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(10,12,16,0.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    /* Logo image: inverted + neon glow */
+    .logo-wrap img {
+      height: 38px;
+      width: auto;
+      filter: invert(1) brightness(10) drop-shadow(0 0 5px rgba(0,200,255,0.8));
+      transition: filter var(--transition);
+    }
+    .logo-wrap:hover img {
+      filter: invert(1) brightness(10) drop-shadow(0 0 10px var(--neon)) drop-shadow(0 0 20px rgba(0,200,255,0.5));
+    }
+
+    .logo-text-wrap {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .logo-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+    }
+
+    .logo-sub {
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #00ff9d;
+      box-shadow: 0 0 6px #00ff9d, 0 0 12px rgba(0,255,157,0.5);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a3a52, #005f8a);
+      border: 1.5px solid var(--border-active);
+      box-shadow: var(--neon-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--neon);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .avatar:hover { box-shadow: var(--neon-glow-lg); }
+
+    /* ── LAYOUT ── */
+    .app { display: flex; flex: 1; }
+
+    /* ── SIDEBAR ── */
+    aside {
+      width: 72px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 0;
+      gap: 0.4rem;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      transition: width 0.28s ease;
+      z-index: 100;
+    }
+    aside:hover { width: 215px; }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1.1rem;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: var(--transition);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      font-size: 0.82rem;
+      font-family: var(--font);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--neon);
+      border-left-color: var(--neon);
+      background: var(--neon-dim);
+    }
+    .nav-btn:hover .nav-icon, .nav-btn.active .nav-icon {
+      filter: drop-shadow(0 0 4px var(--neon));
+    }
+
+    .nav-icon { font-size: 1.2rem; flex-shrink: 0; width: 22px; text-align: center; }
+
+    .nav-label {
+      font-size: 0.82rem;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.05s;
+      flex: 1;
+    }
+    aside:hover .nav-label { opacity: 1; }
+
+    .nav-divider {
+      width: 40px; height: 1px;
+      background: var(--border);
+      margin: 0.4rem 0;
+      transition: width 0.28s ease;
+    }
+    aside:hover .nav-divider { width: 80%; }
+
+    /* ── MAIN ── */
+    main { flex: 1; padding: 1.5rem 1rem; overflow-y: auto; }
+
+    .page { display: none; animation: fadeIn 0.3s ease; }
+    .page.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.04em;
+    }
+
+    .page-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .neon-line {
+      height: 2px;
+      background: linear-gradient(90deg, var(--neon), transparent);
+      box-shadow: 0 0 8px var(--neon);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      width: 60px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--neon);
+      box-shadow: var(--neon-glow);
+    }
+    .stat-card:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.4rem; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--neon); text-shadow: var(--neon-glow); line-height: 1; }
+    .stat-delta { font-size: 0.68rem; color: #00ff9d; margin-top: 0.3rem; }
+
+    /* ── PANELS ── */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      transition: var(--transition);
+    }
+    .panel:hover { border-color: var(--border-active); }
+
+    .panel-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ── TABLE ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .data-table th {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 0.7rem 0.75rem;
+      border-bottom: 1px solid rgba(0,200,255,0.06);
+      color: var(--text-secondary);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--neon-dim); color: var(--text-primary); }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-active  { background: rgba(0,255,157,0.12); color: #00ff9d; border: 1px solid rgba(0,255,157,0.3); }
+    .badge-pending { background: rgba(255,200,0,0.12); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+    .badge-closed  { background: rgba(255,80,80,0.12); color: #ff5050; border: 1px solid rgba(255,80,80,0.3); }
+    .badge-info    { background: var(--neon-dim); color: var(--neon); border: 1px solid var(--border-active); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-family: var(--font);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #005f8a, #0099cc);
+      color: #fff;
+      border: 1px solid var(--border-active);
+      box-shadow: var(--neon-glow);
+    }
+    .btn-primary:hover { box-shadow: var(--neon-glow-lg); transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--neon);
+      border: 1px solid var(--border-active);
+    }
+    .btn-ghost:hover { background: var(--neon-dim); box-shadow: var(--neon-glow); }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.4rem; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.65rem 0.9rem;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-family: var(--font);
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--border-active);
+      box-shadow: 0 0 0 3px rgba(0,200,255,0.1);
+    }
+    .form-textarea { resize: vertical; min-height: 110px; }
+
+    /* ── FILE DROP ZONE ── */
+    .drop-zone {
+      border: 2px dashed var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: rgba(0,200,255,0.03);
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      background: var(--neon-dim);
+      box-shadow: 0 0 20px rgba(0,200,255,0.15);
+    }
+    .drop-zone-icon { font-size: 2.2rem; margin-bottom: 0.75rem; display: block; }
+    .drop-zone-text { font-size: 0.85rem; color: var(--text-secondary); }
+    .drop-zone-sub  { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+    /* ── PROGRESS BARS ── */
+    .progress-wrap { background: rgba(0,200,255,0.08); border-radius: 20px; height: 6px; overflow: hidden; margin-top: 0.4rem; }
+    .progress-bar  { height: 100%; background: linear-gradient(90deg, var(--neon), #0055aa); border-radius: 20px; box-shadow: 0 0 8px var(--neon); transition: width 1s ease; }
+
+    .progress-row { margin-bottom: 1rem; }
+    .progress-row:last-child { margin-bottom: 0; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+    .progress-meta span:last-child { color: var(--neon); }
+
+    /* ── ACTIVITY FEED ── */
+    .activity-item { display: flex; gap: 0.85rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(0,200,255,0.07); }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--neon); box-shadow: var(--neon-glow); flex-shrink: 0; margin-top: 5px; }
+    .activity-text { font-size: 0.78rem; color: var(--text-secondary); }
+    .activity-time { font-size: 0.66rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+    /* ── SOCIAL MEDIA CARDS ── */
+    .social-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; }
+
+    .social-card {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      transition: var(--transition);
+    }
+    .social-card:hover { border-color: var(--border-active); background: var(--bg-card-hover); }
+
+    .social-platform {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .social-stat-val { font-size: 1.3rem; font-weight: 700; color: var(--neon); text-shadow: var(--neon-glow); }
+    .social-stat-lbl { font-size: 0.65rem; color: var(--text-secondary); margin-top: 0.15rem; }
+    .social-delta    { font-size: 0.65rem; color: #00ff9d; margin-top: 0.25rem; }
+
+    /* ── MOBILE NAV ── */
+    .mobile-nav {
+      display: flex;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(13,17,23,0.97);
+      border-top: 1px solid var(--border);
+      z-index: 300;
+      backdrop-filter: blur(12px);
+    }
+
+    .mobile-nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.6rem 0.2rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.5rem;
+      font-family: var(--font);
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: var(--transition);
+      gap: 0.2rem;
+    }
+    .mobile-nav-btn .m-icon { font-size: 1rem; }
+    .mobile-nav-btn.active, .mobile-nav-btn:hover { color: var(--neon); }
+
+    /* ── TICKET CARDS ── */
+    .ticket-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      transition: var(--transition);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .ticket-card:hover { border-color: var(--border-active); background: var(--bg-card-hover); }
+    .ticket-title { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+    .ticket-meta  { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* ── WELCOME BANNER ── */
+    .welcome-banner {
+      background: linear-gradient(135deg, #060f18 0%, #0a1e2e 50%, #060f18 100%);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,200,255,0.12) 0%, transparent 70%);
+    }
+    .welcome-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; }
+    .welcome-sub   { font-size: 0.76rem; color: var(--text-secondary); letter-spacing: 0.06em; }
+
+    /* ── RESPONSIVE ── */
+    @media (min-width: 768px) {
+      main { padding: 2rem 1.75rem; }
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
+      .mobile-nav { display: none; }
+      body { padding-bottom: 0; }
+      .social-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1100px) {
+      main { padding: 2rem 2.5rem; }
+    }
+    @media (max-width: 767px) {
+      aside { display: none; }
+      body  { padding-bottom: 64px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 540px) {
+      .page-actions { width: 100%; }
+      .page-actions .btn { flex: 1; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <a class="logo-wrap" href="#" onclick="showPage('dashboard', document.querySelector('aside .nav-btn'))">
+    <img src="Digi-Logo-Black-400x287.jpg" alt="Digi Solutions Logo" />
+    <div class="logo-text-wrap">
+      <span class="logo-name">Digi Solutions</span>
+      <span class="logo-sub">Customer Portal</span>
+    </div>
+  </a>
+  <div class="header-right">
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      <span>System Online</span>
+    </div>
+    <div class="avatar" id="user-avatar" title="My Account">JS</div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside aria-label="Navigation">
+    <button class="nav-btn active" onclick="showPage('dashboard', this)">
+      <span class="nav-icon">⬡</span>
+      <span class="nav-label">Digi Dashboard</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('creative', this)">
+      <span class="nav-icon">✦</span>
+      <span class="nav-label">Digi Creative</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('leads', this)">
+      <span class="nav-icon">◈</span>
+      <span class="nav-label">Leads</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('customers', this)">
+      <span class="nav-icon">⬟</span>
+      <span class="nav-label">Customers</span>
+    </button>
+    <div class="nav-divider"></div>
+    <button class="nav-btn" onclick="showPage('ticket', this)">
+      <span class="nav-icon">◎</span>
+      <span class="nav-label">Submit Ticket</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('files', this)">
+      <span class="nav-icon">⬆</span>
+      <span class="nav-label">Submit Files</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('inventory', this)">
+      <span class="nav-icon">▦</span>
+      <span class="nav-label">Inventory</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('sales', this)">
+      <span class="nav-icon">◇</span>
+      <span class="nav-label">Sales / Invoicing</span>
+    </button>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <section id="page-dashboard" class="page active" aria-label="Digi Dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Digi Dashboard</h1>
+          <p class="page-subtitle" id="dashboard-date">Overview &mdash; March 2026</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="showPage('creative', document.querySelectorAll('aside .nav-btn')[1])">✦ Digi Creative</button>
+          <button class="btn btn-primary" onclick="showPage('ticket', document.querySelectorAll('aside .nav-btn')[4])">◎ Submit Ticket</button>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="welcome-banner">
+        <p class="welcome-title" id="welcome-msg">Welcome back 👋</p>
+        <p class="welcome-sub">Your Digi Solutions portal is fully operational. All systems nominal.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-label">Transactions</p>
+          <p class="stat-value">47</p>
+          <p class="stat-delta">↑ 12% this month</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Open Tickets</p>
+          <p class="stat-value">3</p>
+          <p class="stat-delta">↓ 2 resolved</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Revenue (MTD)</p>
+          <p class="stat-value">$8.4k</p>
+          <p class="stat-delta">↑ 8% vs last month</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Customers</p>
+          <p class="stat-value">124</p>
+          <p class="stat-delta">↑ 5 new this week</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Activity Feed -->
+        <div class="panel">
+          <p class="panel-title">◎ Recent Activity</p>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <p class="activity-text">New lead submitted via Google Ads campaign.</p>
+              <p class="activity-time">Today, 11:42 AM</p>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <p class="activity-text">Invoice #1042 marked as paid.</p>
+              <p class="activity-time">Today, 9:15 AM</p>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <p class="activity-text">Creative asset bundle delivered to client.</p>
+              <p class="activity-time">Yesterday, 4:30 PM</p>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <p class="activity-text">Support ticket #88 opened — SEO Report.</p>
+              <p class="activity-time">Mar 16, 2:10 PM</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO Performance -->
+        <div class="panel">
+          <p class="panel-title">📈 SEO Performance</p>
+          <div class="progress-row">
+            <div class="progress-meta"><span>Organic Traffic (mo)</span><span>4,820 visits</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:78%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-meta"><span>Domain Authority</span><span>42 / 100</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:42%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-meta"><span>Keyword Rankings (Top 10)</span><span>63 keywords</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:63%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-meta"><span>Page Speed Score</span><span>87 / 100</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:87%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-meta"><span>Backlink Growth</span><span>↑ 22 new links</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:55%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media Performance -->
+      <div class="panel">
+        <p class="panel-title">📣 Social Media Performance</p>
+        <div class="social-grid">
+          <div class="social-card">
+            <p class="social-platform">📘 Facebook</p>
+            <p class="social-stat-val">3,241</p>
+            <p class="social-stat-lbl">Total Followers</p>
+            <p class="social-delta">↑ 4.2% this month</p>
+            <div style="margin-top:0.75rem;">
+              <div class="progress-meta"><span>Reach</span><span>18.4k</span></div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:72%"></div></div>
+            </div>
+          </div>
+          <div class="social-card">
+            <p class="social-platform">📸 Instagram</p>
+            <p class="social-stat-val">1,879</p>
+            <p class="social-stat-lbl">Total Followers</p>
+            <p class="social-delta">↑ 6.7% this month</p>
+            <div style="margin-top:0.75rem;">
+              <div class="progress-meta"><span>Engagement Rate</span><span>5.3%</span></div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:53%"></div></div>
+            </div>
+          </div>
+          <div class="social-card">
+            <p class="social-platform">💼 LinkedIn</p>
+            <p class="social-stat-val">812</p>
+            <p class="social-stat-lbl">Followers</p>
+            <p class="social-delta">↑ 3.1% this month</p>
+            <div style="margin-top:0.75rem;">
+              <div class="progress-meta"><span>Post Impressions</span><span>6.2k</span></div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:62%"></div></div>
+            </div>
+          </div>
+          <div class="social-card">
+            <p class="social-platform">▶ Google Business</p>
+            <p class="social-stat-val">4.8 ★</p>
+            <p class="social-stat-lbl">Avg. Rating (94 reviews)</p>
+            <p class="social-delta">↑ 5 new reviews</p>
+            <div style="margin-top:0.75rem;">
+              <div class="progress-meta"><span>Profile Views</span><span>2,110</span></div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:81%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ DIGI CREATIVE ═══ -->
+    <section id="page-creative" class="page" aria-label="Digi Creative">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Digi Creative</h1>
+          <p class="page-subtitle">Assets, Campaigns &amp; Design Deliverables</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary">+ Request Asset</button>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="panel">
+        <p class="panel-title">✦ Active Projects</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>Project</th><th>Type</th><th>Due</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Spring Campaign Banners</td><td>Display Ads</td><td>Mar 22</td><td><span class="badge badge-active">In Progress</span></td></tr>
+            <tr><td>Homepage Rebrand</td><td>Web Design</td><td>Mar 30</td><td><span class="badge badge-pending">Review</span></td></tr>
+            <tr><td>LinkedIn Ad Set</td><td>Social Media</td><td>Apr 5</td><td><span class="badge badge-info">Queued</span></td></tr>
+            <tr><td>Brand Identity Update</td><td>Branding</td><td>Apr 12</td><td><span class="badge badge-info">Queued</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">◈ Delivered Assets</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>Asset Name</th><th>Delivered</th><th>Format</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Logo Package v2</td><td>Mar 10</td><td>AI / PNG / SVG</td>
+              <td><button class="btn btn-ghost" style="padding:0.3rem 0.7rem;font-size:0.7rem;">Download</button></td>
+            </tr>
+            <tr>
+              <td>Social Media Kit</td><td>Mar 5</td><td>PSD / PNG</td>
+              <td><button class="btn btn-ghost" style="padding:0.3rem 0.7rem;font-size:0.7rem;">Download</button></td>
+            </tr>
+            <tr>
+              <td>Q1 Report Deck</td><td>Feb 28</td><td>PDF</td>
+              <td><button class="btn btn-ghost" style="padding:0.3rem 0.7rem;font-size:0.7rem;">Download</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ LEADS ═══ -->
+    <section id="page-leads" class="page" aria-label="Leads">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Leads</h1>
+          <p class="page-subtitle">Pipeline &amp; Prospect Management</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary">+ Add Lead</button>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
+        <div class="stat-card"><p class="stat-label">New</p><p class="stat-value">14</p></div>
+        <div class="stat-card"><p class="stat-label">Contacted</p><p class="stat-value">22</p></div>
+        <div class="stat-card"><p class="stat-label">Qualified</p><p class="stat-value">8</p></div>
+        <div class="stat-card"><p class="stat-label">Converted</p><p class="stat-value">3</p></div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">◈ Lead Pipeline</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>Name</th><th>Source</th><th>Stage</th><th>Value</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Riverside Auto Group</td><td>Google Ads</td><td>Qualified</td><td>$2,400/mo</td><td><span class="badge badge-active">Hot</span></td></tr>
+            <tr><td>Green Valley Waste Co.</td><td>Referral</td><td>Contacted</td><td>$1,800/mo</td><td><span class="badge badge-pending">Warm</span></td></tr>
+            <tr><td>Summit Real Estate</td><td>LinkedIn</td><td>New</td><td>$950/mo</td><td><span class="badge badge-info">New</span></td></tr>
+            <tr><td>Blue Ridge Winery</td><td>Organic</td><td>Proposal</td><td>$1,200/mo</td><td><span class="badge badge-active">Hot</span></td></tr>
+            <tr><td>Keystone Demolition</td><td>Google Ads</td><td>Contacted</td><td>$3,000/mo</td><td><span class="badge badge-pending">Warm</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ CUSTOMERS ═══ -->
+    <section id="page-customers" class="page" aria-label="Customers">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Customers</h1>
+          <p class="page-subtitle">Active Accounts &amp; Client Records</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary">+ Add Customer</button>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="panel">
+        <p class="panel-title">⬟ Customer Accounts</p>
+        <div style="margin-bottom:1rem;">
+          <input class="form-input" type="search" placeholder="🔍  Search customers…" style="max-width:320px;" />
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Company</th><th>Industry</th><th>MRR</th><th>Since</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Capital Nissan</td><td>Automotive</td><td>$2,800</td><td>Jan 2024</td><td><span class="badge badge-active">Active</span></td></tr>
+            <tr><td>Metro Dumpster Pros</td><td>Waste Mgmt</td><td>$1,600</td><td>Mar 2024</td><td><span class="badge badge-active">Active</span></td></tr>
+            <tr><td>Shenandoah Realty</td><td>Real Estate</td><td>$1,100</td><td>Jun 2024</td><td><span class="badge badge-active">Active</span></td></tr>
+            <tr><td>Lakefront Escapes</td><td>Vacation Rental</td><td>$800</td><td>Sep 2024</td><td><span class="badge badge-pending">At Risk</span></td></tr>
+            <tr><td>Blue Ridge Winery</td><td>Hospitality</td><td>$1,200</td><td>Nov 2024</td><td><span class="badge badge-active">Active</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ SUBMIT TICKET ═══ -->
+    <section id="page-ticket" class="page" aria-label="Submit Ticket">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Submit Ticket</h1>
+          <p class="page-subtitle">Support &amp; Service Requests</p>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <p class="panel-title">◎ New Support Ticket</p>
+          <form onsubmit="submitTicket(event)">
+            <div class="form-group">
+              <label class="form-label" for="t-subject">Subject</label>
+              <input id="t-subject" class="form-input" type="text" placeholder="Brief description of issue" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="t-category">Category</label>
+              <select id="t-category" class="form-select">
+                <option>SEO / Rankings</option>
+                <option>Google Ads</option>
+                <option>Website / Design</option>
+                <option>Billing / Invoice</option>
+                <option>Creative Assets</option>
+                <option>Social Media</option>
+                <option>General Inquiry</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="t-priority">Priority</label>
+              <select id="t-priority" class="form-select">
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Urgent</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="t-desc">Description</label>
+              <textarea id="t-desc" class="form-textarea" placeholder="Provide as much detail as possible…" required></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit" style="width:100%;">Submit Ticket →</button>
+          </form>
+        </div>
+
+        <div class="panel" id="ticket-list-panel">
+          <p class="panel-title">◎ Open Tickets</p>
+          <div class="ticket-card">
+            <div>
+              <p class="ticket-title">Google Ads — Conversion Tracking Off</p>
+              <p class="ticket-meta">Ticket #91 &nbsp;·&nbsp; Opened Mar 17</p>
+            </div>
+            <span class="badge badge-active">Open</span>
+          </div>
+          <div class="ticket-card">
+            <div>
+              <p class="ticket-title">SEO Monthly Report Request</p>
+              <p class="ticket-meta">Ticket #88 &nbsp;·&nbsp; Opened Mar 16</p>
+            </div>
+            <span class="badge badge-pending">In Review</span>
+          </div>
+          <div class="ticket-card">
+            <div>
+              <p class="ticket-title">Invoice Correction — March Billing</p>
+              <p class="ticket-meta">Ticket #85 &nbsp;·&nbsp; Opened Mar 12</p>
+            </div>
+            <span class="badge badge-closed">Closed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SUBMIT FILES ═══ -->
+    <section id="page-files" class="page" aria-label="Submit Files">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Submit Files</h1>
+          <p class="page-subtitle">Upload Assets &amp; Documents to Digi Solutions</p>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <p class="panel-title">⬆ Upload Files</p>
+          <div class="form-group">
+            <label class="form-label" for="file-type">File Category</label>
+            <select id="file-type" class="form-select">
+              <option>Brand Assets (Logos, Fonts)</option>
+              <option>Creative Brief / Copy</option>
+              <option>Photos / Imagery</option>
+              <option>Video / Media</option>
+              <option>Spreadsheets / Data</option>
+              <option>Documents / PDFs</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="file-note">Notes for Team</label>
+            <textarea id="file-note" class="form-textarea" placeholder="Describe what you're submitting and how it should be used…" style="min-height:80px;"></textarea>
+          </div>
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="handleDrop(event)">
+            <span class="drop-zone-icon">⬆</span>
+            <p class="drop-zone-text">Drag &amp; drop files here, or click to browse</p>
+            <p class="drop-zone-sub">Supports: PNG, JPG, SVG, PDF, AI, PSD, MP4, XLSX, DOCX &mdash; Max 50MB each</p>
+          </div>
+          <input type="file" id="file-input" multiple style="display:none;" onchange="handleFileSelect(this)" />
+          <div id="file-list" style="margin-top:1rem;"></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="submitFiles()">⬆ Submit Files to Digi Solutions</button>
+        </div>
+
+        <div class="panel">
+          <p class="panel-title">📁 Recently Submitted</p>
+          <table class="data-table">
+            <thead>
+              <tr><th>File</th><th>Category</th><th>Submitted</th><th>Status</th></tr>
+            </thead>
+            <tbody id="submitted-files-table">
+              <tr><td>brand-guide-v3.pdf</td><td>Brand Assets</td><td>Mar 15</td><td><span class="badge badge-active">Received</span></td></tr>
+              <tr><td>spring-photos.zip</td><td>Photos</td><td>Mar 10</td><td><span class="badge badge-active">In Use</span></td></tr>
+              <tr><td>ad-copy-draft.docx</td><td>Creative Brief</td><td>Mar 7</td><td><span class="badge badge-pending">Under Review</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ INVENTORY ═══ -->
+    <section id="page-inventory" class="page" aria-label="Inventory">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Inventory</h1>
+          <p class="page-subtitle">Digital Assets &amp; Service Packages</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary">+ Add Item</button>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
+        <div class="stat-card"><p class="stat-label">Active Services</p><p class="stat-value">12</p></div>
+        <div class="stat-card"><p class="stat-label">Available Packages</p><p class="stat-value">6</p></div>
+        <div class="stat-card"><p class="stat-label">Assets Managed</p><p class="stat-value">84</p></div>
+        <div class="stat-card"><p class="stat-label">Licenses</p><p class="stat-value">9</p></div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">▦ Service Inventory</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>Service</th><th>Type</th><th>Unit</th><th>Price</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Google Ads Management</td><td>Managed Service</td><td>Per Campaign</td><td>$750/mo</td><td><span class="badge badge-active">Active</span></td></tr>
+            <tr><td>SEO Full Service</td><td>Managed Service</td><td>Per Domain</td><td>$600/mo</td><td><span class="badge badge-active">Active</span></td></tr>
+            <tr><td>Website Design (WP)</td><td>One-Time Build</td><td>Per Site</td><td>$2,500</td><td><span class="badge badge-pending">2 Open</span></td></tr>
+            <tr><td>LinkedIn Ads</td><td>Managed Service</td><td>Per Campaign</td><td>$500/mo</td><td><span class="badge badge-active">Active</span></td></tr>
+            <tr><td>Content Writing</td><td>Retainer</td><td>Per Month</td><td>$350/mo</td><td><span class="badge badge-active">Active</span></td></tr>
+            <tr><td>Graphic Design Retainer</td><td>Retainer</td><td>Per Month</td><td>$400/mo</td><td><span class="badge badge-info">Available</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ SALES / INVOICING ═══ -->
+    <section id="page-sales" class="page" aria-label="Sales and Invoicing">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Sales &amp; Invoicing</h1>
+          <p class="page-subtitle">Billing, Payments &amp; Revenue Tracking</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary">+ Create Invoice</button>
+        </div>
+      </div>
+      <div class="neon-line"></div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><p class="stat-label">Total Invoiced (Mar)</p><p class="stat-value">$11.2k</p></div>
+        <div class="stat-card"><p class="stat-label">Paid</p><p class="stat-value">$8.4k</p><p class="stat-delta" style="color:#00ff9d;">↑ 75%</p></div>
+        <div class="stat-card"><p class="stat-label">Outstanding</p><p class="stat-value">$2.8k</p><p class="stat-delta" style="color:#ffc800;">3 invoices</p></div>
+        <div class="stat-card"><p class="stat-label">Overdue</p><p class="stat-value">$600</p><p class="stat-delta" style="color:#ff5050;">1 invoice</p></div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">◇ Recent Invoices</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>#</th><th>Client</th><th>Amount</th><th>Issued</th><th>Due</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>#1045</td><td>Capital Nissan</td><td>$2,800</td><td>Mar 1</td><td>Mar 15</td><td><span class="badge badge-active">Paid</span></td></tr>
+            <tr><td>#1044</td><td>Metro Dumpster Pros</td><td>$1,600</td><td>Mar 1</td><td>Mar 15</td><td><span class="badge badge-active">Paid</span></td></tr>
+            <tr><td>#1043</td><td>Shenandoah Realty</td><td>$1,100</td><td>Mar 1</td><td>Mar 20</td><td><span class="badge badge-pending">Pending</span></td></tr>
+            <tr><td>#1042</td><td>Blue Ridge Winery</td><td>$1,200</td><td>Mar 1</td><td>Mar 20</td><td><span class="badge badge-pending">Pending</span></td></tr>
+            <tr><td>#1041</td><td>Lakefront Escapes</td><td>$600</td><td>Feb 15</td><td>Mar 1</td><td><span class="badge badge-closed">Overdue</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">◇ Revenue Trend (Q1 2026)</p>
+        <div>
+          <div class="progress-row">
+            <div class="progress-meta"><span>January</span><span>$9,100</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:72%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-meta"><span>February</span><span>$10,400</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:83%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-meta"><span>March (MTD)</span><span>$8,400</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:67%"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── MOBILE BOTTOM NAV ── -->
+<nav class="mobile-nav" aria-label="Mobile Navigation">
+  <button class="mobile-nav-btn active" onclick="showPage('dashboard', this, true)">
+    <span class="m-icon">⬡</span>Home
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('creative', this, true)">
+    <span class="m-icon">✦</span>Creative
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('leads', this, true)">
+    <span class="m-icon">◈</span>Leads
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('customers', this, true)">
+    <span class="m-icon">⬟</span>Customers
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('ticket', this, true)">
+    <span class="m-icon">◎</span>Ticket
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('files', this, true)">
+    <span class="m-icon">⬆</span>Files
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('sales', this, true)">
+    <span class="m-icon">◇</span>Sales
+  </button>
+</nav>
+
+<script>
+  /* ─── Customer Data Object ───────────────────────────────────────────────
+     Replace these values via your backend/CMS/auth layer.
+     Example integrations: WordPress user_meta, JWT payload, PHP echo, etc.
+  ──────────────────────────────────────────────────────────────────────── */
+  const CUSTOMER = {
+    firstName:  "Jimmy",          // Pull from: <?php echo $user->first_name; ?> or JWT claim
+    lastName:   "Flame",
+    initials:   "JF",
+    company:    "Digi Solutions",
+    email:      "jimmy@digi-solutions.com"
+  };
+
+  /* ─── Populate customer-specific UI ─────────────────────────────────── */
+  function initCustomer() {
+    const welcome = document.getElementById('welcome-msg');
+    if (welcome) welcome.textContent = 'Welcome back, ' + CUSTOMER.firstName + ' 👋';
+
+    const avatar = document.getElementById('user-avatar');
+    if (avatar) {
+      avatar.textContent = CUSTOMER.initials;
+      avatar.title = CUSTOMER.firstName + ' ' + CUSTOMER.lastName;
+    }
+
+    // Live date on dashboard subtitle
+    const dateEl = document.getElementById('dashboard-date');
+    if (dateEl) {
+      const now = new Date();
+      const opts = { month: 'long', year: 'numeric' };
+      dateEl.innerHTML = 'Overview &mdash; ' + now.toLocaleDateString('en-US', opts);
+    }
+  }
+
+  /* ─── Page Navigation ───────────────────────────────────────────────── */
+  const PAGE_IDS = ['dashboard','creative','leads','customers','ticket','files','inventory','sales'];
+
+  function showPage(id, btn, isMobile = false) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+
+    document.querySelectorAll('aside .nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+
+    const sideIdx   = PAGE_IDS.indexOf(id);
+    const mobilePIDs= ['dashboard','creative','leads','customers','ticket','files','sales'];
+    const mobileIdx = mobilePIDs.indexOf(id);
+
+    const sideBtns   = document.querySelectorAll('aside .nav-btn');
+    const mobileBtns = document.querySelectorAll('.mobile-nav-btn');
+
+    if (sideBtns[sideIdx])   sideBtns[sideIdx].classList.add('active');
+    if (mobileBtns[mobileIdx]) mobileBtns[mobileIdx].classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ─── Submit Ticket ─────────────────────────────────────────────────── */
+  function submitTicket(e) {
+    e.preventDefault();
+    const subj = document.getElementById('t-subject').value;
+    const cat  = document.getElementById('t-category').value;
+    const panel = document.getElementById('ticket-list-panel');
+    const id = '#' + (Math.floor(Math.random() * 900) + 100);
+    const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const card = document.createElement('div');
+    card.className = 'ticket-card';
+    card.innerHTML = \`
+      <div>
+        <p class="ticket-title">\${cat} — \${subj}</p>
+        <p class="ticket-meta">Ticket \${id} &nbsp;·&nbsp; Opened \${now}</p>
+      </div>
+      <span class="badge badge-active">Open</span>
+    \`;
+    panel.appendChild(card);
+    e.target.reset();
+    alert('✓ Ticket submitted! Ref: ' + id);
+  }
+
+  /* ─── File Upload Handling ──────────────────────────────────────────── */
+  function handleFileSelect(input) {
+    renderFileList(Array.from(input.files));
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.remove('drag-over');
+    renderFileList(Array.from(e.dataTransfer.files));
+  }
+
+  function renderFileList(files) {
+    const container = document.getElementById('file-list');
+    container.innerHTML = '';
+    files.forEach(file => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.75rem;background:var(--bg-base);border:1px solid var(--border);border-radius:8px;margin-bottom:0.4rem;font-size:0.78rem;';
+      const size = file.size > 1048576 ? (file.size / 1048576).toFixed(1) + ' MB' : (file.size / 1024).toFixed(0) + ' KB';
+      item.innerHTML = \`<span style="color:var(--text-secondary);">📄 \${file.name}</span><span style="color:var(--text-muted);">\${size}</span>\`;
+      container.appendChild(item);
+    });
+  }
+
+  function submitFiles() {
+    const list = document.getElementById('file-list');
+    if (!list.children.length) { alert('Please select at least one file to submit.'); return; }
+    const table = document.getElementById('submitted-files-table');
+    const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const cat = document.getElementById('file-type').value.split(' (')[0];
+    Array.from(list.children).forEach(item => {
+      const name = item.querySelector('span').textContent.replace('📄 ', '');
+      const row = document.createElement('tr');
+      row.innerHTML = \`<td>\${name}</td><td>\${cat}</td><td>\${now}</td><td><span class="badge badge-active">Received</span></td>\`;
+      table.prepend(row);
+    });
+    list.innerHTML = '';
+    document.getElementById('file-note').value = '';
+    alert('✓ Files submitted to Digi Solutions successfully!');
+  }
+
+  /* ─── Init ──────────────────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', initCustomer);
+</script>
+</body>
+</html>
