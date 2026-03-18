@@ -577,7 +577,6 @@
 <!-- ── HEADER ── -->
 <header>
   <a class="logo-wrap" href="#" onclick="showPage('dashboard', document.querySelector('aside .nav-btn'))">
-    <img src="Digi-Logo-Black-400x287.jpg" alt="Digi Solutions Logo" />
     <div class="logo-text-wrap">
       <span class="logo-name">Digi Solutions</span>
       <span class="logo-sub">Customer Portal</span>
@@ -638,9 +637,8 @@
     <section id="page-dashboard" class="page active" aria-label="Digi Dashboard">
       <div class="page-header">
         <div>
-          <h1 class="page-title">Digi Dashboard</h1>
-          <p class="page-subtitle" id="dashboard-date">Overview &mdash; March 2026</p>
-        </div>
+          <h1 class="page-title">Dashboard</h1>
+          </div>
         <div class="page-actions">
           <button class="btn btn-primary" onclick="showPage('creative', document.querySelectorAll('aside .nav-btn')[1])">✦ Digi Creative</button>
           <button class="btn btn-primary" onclick="showPage('ticket', document.querySelectorAll('aside .nav-btn')[4])">◎ Submit Ticket</button>
@@ -1182,14 +1180,7 @@
       avatar.textContent = CUSTOMER.initials;
       avatar.title = CUSTOMER.firstName + ' ' + CUSTOMER.lastName;
     }
-
-    // Live date on dashboard subtitle
-    const dateEl = document.getElementById('dashboard-date');
-    if (dateEl) {
-      const now = new Date();
-      const opts = { month: 'long', year: 'numeric' };
-      dateEl.innerHTML = 'Overview &mdash; ' + now.toLocaleDateString('en-US', opts);
-    }
+  }
   }
 
   /* ─── Page Navigation ───────────────────────────────────────────────── */
