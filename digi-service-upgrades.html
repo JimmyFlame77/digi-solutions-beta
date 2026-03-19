@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digi Solutions | Service Upgrades</title>
+  <style>
+    /* ── Service Upgrades Page ── */
+    .hero-banner {
+      background: linear-gradient(135deg, #060f18 0%, #0a1e2e 50%, #060f18 100%);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 200px;
+      background: radial-gradient(ellipse, rgba(0,200,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; right: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,200,255,0.08) 0%, transparent 70%);
+    }
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+      margin-bottom: 0.75rem;
+    }
+    .hero-title {
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: 0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.85rem;
+    }
+    .hero-title span {
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+    }
+    .hero-sub {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto 1.5rem;
+      line-height: 1.6;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.6rem;
+      background: linear-gradient(135deg, #005f8a, #0099cc);
+      color: #fff;
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--neon-glow-lg);
+      transition: var(--transition);
+    }
+    .hero-cta:hover { box-shadow: 0 0 20px rgba(0,200,255,1), 0 0 50px rgba(0,200,255,0.5); transform: translateY(-2px); }
+
+    /* ── Service Cards Grid ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon), transparent);
+      box-shadow: 0 0 8px var(--neon);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .service-card:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4), 0 0 20px rgba(0,200,255,0.08);
+    }
+    .service-card:hover::before { opacity: 1; }
+
+    .service-card-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .service-card-badge {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      background: rgba(0,200,255,0.1);
+      color: var(--neon);
+      border: 1px solid var(--border-active);
+    }
+    .service-card-badge.popular {
+      background: rgba(255,180,0,0.12);
+      color: #ffb400;
+      border-color: rgba(255,180,0,0.4);
+    }
+    .service-card-badge.featured {
+      background: rgba(0,255,157,0.1);
+      color: #00ff9d;
+      border-color: rgba(0,255,157,0.35);
+    }
+
+    .service-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.03em;
+    }
+    .service-card-desc {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .service-card-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .service-card-features li {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .service-card-features li::before {
+      content: '▸';
+      color: var(--neon);
+      font-size: 0.65rem;
+      flex-shrink: 0;
+    }
+    .btn-price {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.6rem 1rem;
+      background: linear-gradient(135deg, #005f8a, #0099cc);
+      color: #fff;
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      font-family: var(--font);
+      box-shadow: var(--neon-glow);
+      transition: var(--transition);
+      width: 100%;
+      margin-top: auto;
+    }
+    .btn-price:hover {
+      box-shadow: var(--neon-glow-lg);
+      transform: translateY(-1px);
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+      margin-bottom: 1rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    .bottom-cta {
+      background: linear-gradient(135deg, #060f18 0%, #0a1e2e 50%, #060f18 100%);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .bottom-cta-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+    .bottom-cta-sub   { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem; }
+
+    @media (max-width: 540px) {
+      .services-grid { grid-template-columns: 1fr; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:       #0a0c10;
+      --bg-panel:      #0d1117;
+      --bg-card:       #111820;
+      --bg-card-hover: #141e2a;
+      --neon:          #00c8ff;
+      --neon-dim:      rgba(0,200,255,0.15);
+      --neon-glow:     0 0 8px rgba(0,200,255,0.7), 0 0 20px rgba(0,200,255,0.35);
+      --neon-glow-lg:  0 0 14px rgba(0,200,255,0.9), 0 0 40px rgba(0,200,255,0.4);
+      --text-primary:  #e8f4f8;
+      --text-secondary:#7a9bb0;
+      --text-muted:    #3d5a6e;
+      --border:        rgba(0,200,255,0.18);
+      --border-active: rgba(0,200,255,0.65);
+      --radius:        10px;
+      --radius-lg:     16px;
+      --font:          'Segoe UI', system-ui, -apple-system, sans-serif;
+      --transition:    0.22s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(10,12,16,0.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    /* Logo image: inverted + neon glow */
+    .logo-wrap img {
+      height: 38px;
+      width: auto;
+      filter: invert(1) brightness(10) drop-shadow(0 0 5px rgba(0,200,255,0.8));
+      transition: filter var(--transition);
+    }
+    .logo-wrap:hover img {
+      filter: invert(1) brightness(10) drop-shadow(0 0 10px var(--neon)) drop-shadow(0 0 20px rgba(0,200,255,0.5));
+    }
+
+    .logo-text-wrap {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .logo-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+    }
+
+    .logo-sub {
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #00ff9d;
+      box-shadow: 0 0 6px #00ff9d, 0 0 12px rgba(0,255,157,0.5);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a3a52, #005f8a);
+      border: 1.5px solid var(--border-active);
+      box-shadow: var(--neon-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--neon);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .avatar:hover { box-shadow: var(--neon-glow-lg); }
+
+    /* ── LAYOUT ── */
+    .app { display: flex; flex: 1; }
+
+    /* ── SIDEBAR ── */
+    aside {
+      width: 72px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 0;
+      gap: 0.4rem;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      transition: width 0.28s ease;
+      z-index: 100;
+    }
+    aside:hover { width: 215px; }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1.1rem;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: var(--transition);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      font-size: 0.82rem;
+      font-family: var(--font);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--neon);
+      border-left-color: var(--neon);
+      background: var(--neon-dim);
+    }
+    .nav-btn:hover .nav-icon, .nav-btn.active .nav-icon {
+      filter: drop-shadow(0 0 4px var(--neon));
+    }
+
+    .nav-icon { font-size: 1.2rem; flex-shrink: 0; width: 22px; text-align: center; }
+
+    .nav-label {
+      font-size: 0.82rem;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.05s;
+      flex: 1;
+    }
+    aside:hover .nav-label { opacity: 1; }
+
+    .nav-divider {
+      width: 40px; height: 1px;
+      background: var(--border);
+      margin: 0.4rem 0;
+      transition: width 0.28s ease;
+    }
+    aside:hover .nav-divider { width: 80%; }
+
+    /* ── MAIN ── */
+    main { flex: 1; padding: 1.5rem 1rem; overflow-y: auto; }
+
+    .page { display: none; animation: fadeIn 0.3s ease; }
+    .page.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.04em;
+    }
+
+    .page-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .neon-line {
+      height: 2px;
+      background: linear-gradient(90deg, var(--neon), transparent);
+      box-shadow: 0 0 8px var(--neon);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      width: 60px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--neon);
+      box-shadow: var(--neon-glow);
+    }
+    .stat-card:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.4rem; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--neon); text-shadow: var(--neon-glow); line-height: 1; }
+    .stat-delta { font-size: 0.68rem; color: #00ff9d; margin-top: 0.3rem; }
+
+    /* ── PANELS ── */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      transition: var(--transition);
+    }
+    .panel:hover { border-color: var(--border-active); }
+
+    .panel-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ── TABLE ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .data-table th {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 0.7rem 0.75rem;
+      border-bottom: 1px solid rgba(0,200,255,0.06);
+      color: var(--text-secondary);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--neon-dim); color: var(--text-primary); }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-active  { background: rgba(0,255,157,0.12); color: #00ff9d; border: 1px solid rgba(0,255,157,0.3); }
+    .badge-pending { background: rgba(255,200,0,0.12); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+    .badge-closed  { background: rgba(255,80,80,0.12); color: #ff5050; border: 1px solid rgba(255,80,80,0.3); }
+    .badge-info    { background: var(--neon-dim); color: var(--neon); border: 1px solid var(--border-active); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-family: var(--font);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #005f8a, #0099cc);
+      color: #fff;
+      border: 1px solid var(--border-active);
+      box-shadow: var(--neon-glow);
+    }
+    .btn-primary:hover { box-shadow: var(--neon-glow-lg); transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--neon);
+      border: 1px solid var(--border-active);
+    }
+    .btn-ghost:hover { background: var(--neon-dim); box-shadow: var(--neon-glow); }
+
+
+    .btn-danger {
+      background: linear-gradient(135deg, #5a0000, #cc0000);
+      color: #fff;
+      border: 1px solid rgba(255,60,60,0.65);
+      box-shadow: 0 0 8px rgba(255,40,40,0.7), 0 0 20px rgba(255,40,40,0.35);
+    }
+    .btn-danger:hover {
+      box-shadow: 0 0 14px rgba(255,40,40,0.9), 0 0 40px rgba(255,40,40,0.4);
+      transform: translateY(-1px);
+    }
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.4rem; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.65rem 0.9rem;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-family: var(--font);
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--border-active);
+      box-shadow: 0 0 0 3px rgba(0,200,255,0.1);
+    }
+    .form-textarea { resize: vertical; min-height: 110px; }
+
+    /* ── FILE DROP ZONE ── */
+    .drop-zone {
+      border: 2px dashed var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: rgba(0,200,255,0.03);
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      background: var(--neon-dim);
+      box-shadow: 0 0 20px rgba(0,200,255,0.15);
+    }
+    .drop-zone-icon { font-size: 2.2rem; margin-bottom: 0.75rem; display: block; }
+    .drop-zone-text { font-size: 0.85rem; color: var(--text-secondary); }
+    .drop-zone-sub  { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+    /* ── PROGRESS BARS ── */
+    .progress-wrap { background: rgba(0,200,255,0.08); border-radius: 20px; height: 6px; overflow: hidden; margin-top: 0.4rem; }
+    .progress-bar  { height: 100%; background: linear-gradient(90deg, var(--neon), #0055aa); border-radius: 20px; box-shadow: 0 0 8px var(--neon); transition: width 1s ease; }
+
+    .progress-row { margin-bottom: 1rem; }
+    .progress-row:last-child { margin-bottom: 0; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+    .progress-meta span:last-child { color: var(--neon); }
+
+    /* ── ACTIVITY FEED ── */
+    .activity-item { display: flex; gap: 0.85rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(0,200,255,0.07); }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--neon); box-shadow: var(--neon-glow); flex-shrink: 0; margin-top: 5px; }
+    .activity-text { font-size: 0.78rem; color: var(--text-secondary); }
+    .activity-time { font-size: 0.66rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+
+    /* ── Service Items ── */
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(0,200,255,0.07);
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .service-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+    }
+
+    .service-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .service-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .service-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .service-price {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+    }
+
+    .service-per {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .service-budget {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      margin-top: 0.1rem;
+    }
+
+    /* ── SOCIAL MEDIA CARDS ── */
+    .social-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; }
+
+    .social-card {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      transition: var(--transition);
+    }
+    .social-card:hover { border-color: var(--border-active); background: var(--bg-card-hover); }
+
+    .social-platform {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .social-stat-val { font-size: 1.3rem; font-weight: 700; color: var(--neon); text-shadow: var(--neon-glow); }
+    .social-stat-lbl { font-size: 0.65rem; color: var(--text-secondary); margin-top: 0.15rem; }
+    .social-delta    { font-size: 0.65rem; color: #00ff9d; margin-top: 0.25rem; }
+
+    /* ── MOBILE NAV ── */
+    .mobile-nav {
+      display: flex;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(13,17,23,0.97);
+      border-top: 1px solid var(--border);
+      z-index: 300;
+      backdrop-filter: blur(12px);
+    }
+
+    .mobile-nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.6rem 0.2rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.5rem;
+      font-family: var(--font);
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: var(--transition);
+      gap: 0.2rem;
+    }
+    .mobile-nav-btn .m-icon { font-size: 1rem; }
+    .mobile-nav-btn.active, .mobile-nav-btn:hover { color: var(--neon); }
+
+    /* ── TICKET CARDS ── */
+    .ticket-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      transition: var(--transition);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .ticket-card:hover { border-color: var(--border-active); background: var(--bg-card-hover); }
+    .ticket-title { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+    .ticket-meta  { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* ── WELCOME BANNER ── */
+    .welcome-banner {
+      background: linear-gradient(135deg, #060f18 0%, #0a1e2e 50%, #060f18 100%);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,200,255,0.12) 0%, transparent 70%);
+    }
+    .welcome-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; }
+    .welcome-sub   { font-size: 0.76rem; color: var(--text-secondary); letter-spacing: 0.06em; }
+
+    /* ── RESPONSIVE ── */
+    @media (min-width: 768px) {
+      main { padding: 2rem 1.75rem; }
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
+      .mobile-nav { display: none; }
+      body { padding-bottom: 0; }
+      .social-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1100px) {
+      main { padding: 2rem 2.5rem; }
+    }
+    @media (max-width: 767px) {
+      aside { display: none; }
+      body  { padding-bottom: 64px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 540px) {
+      .page-actions { width: 100%; }
+      .page-actions .btn { flex: 1; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <a class="logo-wrap" href="#" onclick="showPage('dashboard', document.querySelector('aside .nav-btn'))">
+    <div class="logo-text-wrap">
+      <span class="logo-name">Digi Solutions</span>
+      <span class="logo-sub">Customer Portal</span>
+    </div>
+  </a>
+  <div class="header-right">
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      <span>System Online</span>
+    </div>
+    <div class="avatar" id="user-avatar" title="My Account">JS</div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <!-- ── SIDEBAR ── -->
+  <aside aria-label="Navigation">
+    <button class="nav-btn" onclick="showPage('dashboard', this)">
+      <span class="nav-icon">⬡</span>
+      <span class="nav-label">Digi Dashboard</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('creative', this)">
+      <span class="nav-icon">✦</span>
+      <span class="nav-label">Digi Creative</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('leads', this)">
+      <span class="nav-icon">◈</span>
+      <span class="nav-label">Leads</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('customers', this)">
+      <span class="nav-icon">⬟</span>
+      <span class="nav-label">Customers</span>
+    </button>
+    <div class="nav-divider"></div>
+    <button class="nav-btn" onclick="showPage('ticket', this)">
+      <span class="nav-icon">◎</span>
+      <span class="nav-label">Submit Ticket</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('files', this)">
+      <span class="nav-icon">⬆</span>
+      <span class="nav-label">Submit Files</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('inventory', this)">
+      <span class="nav-icon">▦</span>
+      <span class="nav-label">Inventory</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('sales', this)">
+      <span class="nav-icon">◇</span>
+      <span class="nav-label">Sales / Invoicing</span>
+    </button>
+  </aside>
+
+  <main>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <p class="hero-eyebrow">⚡ Digi Solutions &mdash; Service Upgrades</p>
+      <h1 class="hero-title">Supercharge Your <span>Marketing.</span><br>Outrank. Outreach. Outperform.</h1>
+      <p class="hero-sub">Whether you're just getting started or ready to scale, Digi Solutions has a package built for your goals. Every service is managed by real marketing specialists — no templates, no guesswork.</p>
+      <a class="hero-cta" href="mailto:support@digi-solutions.com">⚡ Talk to Our Team</a>
+    </div>
+
+    <div class="neon-line"></div>
+
+    <!-- Packages -->
+    <p class="section-label">⬡ Packages</p>
+    <div class="services-grid">
+
+      <div class="service-card">
+        <span class="service-card-badge popular">Popular</span>
+        <div class="service-card-icon">🚀</div>
+        <p class="service-card-title">Core Package</p>
+        <p class="service-card-desc">The perfect launchpad for businesses ready to grow their online presence. Combines essential SEO, website management, and ad strategy into one cohesive plan.</p>
+        <ul class="service-card-features">
+          <li>Website maintenance &amp; updates</li>
+          <li>Local SEO optimization</li>
+          <li>1 ad channel management</li>
+          <li>Monthly performance report</li>
+        </ul>
+        <button class="btn-price" onclick="requestPrice('Core Package')">⚡ Click for Price</button>
+      </div>
+
+      <div class="service-card">
+        <span class="service-card-badge featured">Best Value</span>
+        <div class="service-card-icon">🏆</div>
+        <p class="service-card-title">Enterprise Package</p>
+        <p class="service-card-desc">Full-stack digital marketing for businesses serious about dominating their market. Everything in Core, plus multi-channel ads, advanced SEO, content creation, and dedicated account management.</p>
+        <ul class="service-card-features">
+          <li>All Core Package services</li>
+          <li>Multi-channel ad management</li>
+          <li>Content writing &amp; strategy</li>
+          <li>Brand &amp; creative support</li>
+          <li>Dedicated account manager</li>
+        </ul>
+        <button class="btn-price" onclick="requestPrice('Enterprise Package')">⚡ Click for Price</button>
+      </div>
+
+    </div>
+
+    <!-- Individual Services -->
+    <p class="section-label">◈ Individual Services</p>
+    <div class="services-grid">
+
+      <div class="service-card">
+        <div class="service-card-icon">📈</div>
+        <p class="service-card-title">SEO</p>
+        <p class="service-card-desc">Rank higher, get found faster. Our SEO service covers on-page optimization, local search, keyword strategy, technical audits, and monthly reporting to grow your organic traffic consistently.</p>
+        <ul class="service-card-features">
+          <li>On-page &amp; technical SEO</li>
+          <li>Google Business Profile optimization</li>
+          <li>Keyword research &amp; targeting</li>
+          <li>Backlink building strategy</li>
+          <li>Monthly rank tracking report</li>
+        </ul>
+        <button class="btn-price" onclick="requestPrice('SEO')">⚡ Click for Price</button>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-icon">🌐</div>
+        <p class="service-card-title">Website Build</p>
+        <p class="service-card-desc">A custom-designed, mobile-first WordPress website built to convert visitors into customers. Fast, secure, SEO-ready, and built to represent your brand at its best.</p>
+        <ul class="service-card-features">
+          <li>Custom WordPress design</li>
+          <li>Mobile-first &amp; responsive</li>
+          <li>SEO foundation built-in</li>
+          <li>Contact forms &amp; lead capture</li>
+          <li>SSL, hosting setup &amp; launch</li>
+        </ul>
+        <button class="btn-price" onclick="requestPrice('Website Build')">⚡ Click for Price</button>
+      </div>
+
+      <div class="service-card">
+        <span class="service-card-badge">Multi-Channel</span>
+        <div class="service-card-icon">🎯</div>
+        <p class="service-card-title">Digital Ads</p>
+        <p class="service-card-desc">Targeted paid advertising across Google, Meta (Facebook &amp; Instagram), and LinkedIn. We build, manage, and optimize campaigns that put your brand in front of the right people at the right time.</p>
+        <ul class="service-card-features">
+          <li>Google Search &amp; Display Ads</li>
+          <li>Meta (Facebook &amp; Instagram) Ads</li>
+          <li>LinkedIn Sponsored Campaigns</li>
+          <li>Audience targeting &amp; retargeting</li>
+          <li>Budget management &amp; reporting</li>
+        </ul>
+        <button class="btn-price" onclick="requestPrice('Digital Ads')">⚡ Click for Price</button>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-icon">✦</div>
+        <p class="service-card-title">Business Branding</p>
+        <p class="service-card-desc">Build a brand that people remember. From logo and color palette to voice and visual identity, we craft a cohesive brand system that sets you apart from the competition.</p>
+        <ul class="service-card-features">
+          <li>Logo design &amp; variations</li>
+          <li>Color palette &amp; typography</li>
+          <li>Brand guidelines document</li>
+          <li>Business card &amp; stationery design</li>
+          <li>Brand voice &amp; messaging</li>
+        </ul>
+        <button class="btn-price" onclick="requestPrice('Business Branding')">⚡ Click for Price</button>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-icon">🎨</div>
+        <p class="service-card-title">Graphic Design</p>
+        <p class="service-card-desc">Professional design for every touchpoint — social media graphics, ad creatives, flyers, banners, and more. On-brand, on-time, and built to get attention.</p>
+        <ul class="service-card-features">
+          <li>Social media graphics &amp; templates</li>
+          <li>Ad creative design (all platforms)</li>
+          <li>Print-ready flyers &amp; brochures</li>
+          <li>Web banners &amp; display ads</li>
+          <li>Monthly design retainer available</li>
+        </ul>
+        <button class="btn-price" onclick="requestPrice('Graphic Design')">⚡ Click for Price</button>
+      </div>
+
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="bottom-cta">
+      <p class="bottom-cta-title">Not sure where to start?</p>
+      <p class="bottom-cta-sub">Our team will put together a custom recommendation based on your goals, budget, and current marketing presence — no pressure, no obligation.</p>
+      <a class="hero-cta" href="mailto:support@digi-solutions.com">⚡ Get a Free Consultation</a>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── MOBILE BOTTOM NAV ── -->
+<nav class="mobile-nav" aria-label="Mobile Navigation">
+  <button class="mobile-nav-btn active" onclick="showPage('dashboard', this, true)">
+    <span class="m-icon">⬡</span>Home
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('creative', this, true)">
+    <span class="m-icon">✦</span>Creative
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('leads', this, true)">
+    <span class="m-icon">◈</span>Leads
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('customers', this, true)">
+    <span class="m-icon">⬟</span>Customers
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('ticket', this, true)">
+    <span class="m-icon">◎</span>Ticket
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('files', this, true)">
+    <span class="m-icon">⬆</span>Files
+  </button>
+  <button class="mobile-nav-btn" onclick="showPage('sales', this, true)">
+    <span class="m-icon">◇</span>Sales
+  </button>
+</nav>
+
+<!-- Price Request Modal -->
+<div id="price-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div style="background:var(--bg-card);border:1px solid var(--border-active);border-radius:var(--radius-lg);padding:2rem;max-width:420px;width:90%;box-shadow:var(--neon-glow-lg);position:relative;">
+    <button onclick="closeModal()" style="position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;">✕</button>
+    <p style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--neon);text-shadow:var(--neon-glow);margin-bottom:0.5rem;">⚡ Pricing Request</p>
+    <h2 style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.35rem;" id="modal-service-name"></h2>
+    <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:1.25rem;line-height:1.5;">Our team will reach out within one business day with custom pricing tailored to your business size and goals.</p>
+    <div style="margin-bottom:0.85rem;">
+      <label style="display:block;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:0.35rem;">Your Name</label>
+      <input id="modal-name" type="text" style="width:100%;background:var(--bg-base);border:1px solid var(--border);border-radius:var(--radius);padding:0.6rem 0.85rem;color:var(--text-primary);font-size:0.82rem;font-family:var(--font);outline:none;" placeholder="First &amp; Last Name" />
+    </div>
+    <div style="margin-bottom:1.25rem;">
+      <label style="display:block;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:0.35rem;">Best Email</label>
+      <input id="modal-email" type="email" style="width:100%;background:var(--bg-base);border:1px solid var(--border);border-radius:var(--radius);padding:0.6rem 0.85rem;color:var(--text-primary);font-size:0.82rem;font-family:var(--font);outline:none;" placeholder="you@company.com" />
+    </div>
+    <button onclick="sendPriceRequest()" style="width:100%;padding:0.65rem;background:linear-gradient(135deg,#005f8a,#0099cc);color:#fff;border:1px solid var(--border-active);border-radius:var(--radius);font-size:0.82rem;font-weight:700;letter-spacing:0.06em;cursor:pointer;font-family:var(--font);box-shadow:var(--neon-glow);transition:var(--transition);">⚡ Send Pricing Request</button>
+  </div>
+</div>
+
+<script>
+  const CUSTOMER = {
+    firstName: "Jimmy",
+    lastName:  "Flame",
+    initials:  "JF",
+    company:   "Digi Solutions",
+    email:     "jimmy@digi-solutions.com"
+  };
+
+  function initCustomer() {
+    const avatar = document.getElementById('user-avatar');
+    if (avatar) { avatar.textContent = CUSTOMER.initials; avatar.title = CUSTOMER.firstName + ' ' + CUSTOMER.lastName; }
+    const welcomeEl = document.getElementById('welcome-msg');
+    if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + CUSTOMER.firstName + ' 👋';
+    // Pre-fill modal
+    const nameEl  = document.getElementById('modal-name');
+    const emailEl = document.getElementById('modal-email');
+    if (nameEl)  nameEl.value  = CUSTOMER.firstName + ' ' + CUSTOMER.lastName;
+    if (emailEl) emailEl.value = CUSTOMER.email;
+  }
+
+  function requestPrice(service) {
+    document.getElementById('modal-service-name').textContent = service;
+    const modal = document.getElementById('price-modal');
+    modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('price-modal').style.display = 'none';
+  }
+
+  function sendPriceRequest() {
+    const name    = document.getElementById('modal-name').value;
+    const email   = document.getElementById('modal-email').value;
+    const service = document.getElementById('modal-service-name').textContent;
+    if (!name || !email) { alert('Please fill in your name and email.'); return; }
+    // Wire to your backend/CRM here
+    window.location.href = 'mailto:support@digi-solutions.com?subject=Pricing Request: ' + encodeURIComponent(service) + '&body=Name: ' + encodeURIComponent(name) + '%0AEmail: ' + encodeURIComponent(email) + '%0AService: ' + encodeURIComponent(service);
+    closeModal();
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('price-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Nav to dashboard
+  function goToDashboard() {
+    window.location.href = 'digi-dashboard-v10-final.html';
+  }
+
+  // Sidebar nav (back to dashboard pages)
+  function showPage(id) {
+    window.location.href = 'digi-dashboard-v10-final.html#' + id;
+  }
+
+  document.addEventListener('DOMContentLoaded', initCustomer);
+</script>
+</body>
+</html>
