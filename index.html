@@ -466,6 +466,63 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 
+
+    /* ── Service Items ── */
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(0,200,255,0.07);
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .service-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+    }
+
+    .service-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .service-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .service-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .service-price {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neon);
+      text-shadow: var(--neon-glow);
+    }
+
+    .service-per {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .service-budget {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      margin-top: 0.1rem;
+    }
+
     /* ── SOCIAL MEDIA CARDS ── */
     .social-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; }
 
@@ -721,28 +778,47 @@
           </div>
         </div>
 
-        <!-- SEO Performance -->
+        <!-- My Services -->
         <div class="panel">
-          <p class="panel-title">📈 SEO Performance</p>
-          <div class="progress-row">
-            <div class="progress-meta"><span>Organic Traffic (mo)</span><span>4,820 visits</span></div>
-            <div class="progress-wrap"><div class="progress-bar" style="width:78%"></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+            <p class="panel-title" style="margin-bottom:0;">⚡ My Services</p>
+            <button class="btn btn-primary" style="font-size:0.72rem;padding:0.4rem 0.85rem;" onclick="window.location.href='/service-upgrades'">⚡ Service Upgrades</button>
           </div>
-          <div class="progress-row">
-            <div class="progress-meta"><span>Domain Authority</span><span>42 / 100</span></div>
-            <div class="progress-wrap"><div class="progress-bar" style="width:42%"></div></div>
+          <div class="service-item">
+            <div class="service-info">
+              <span class="service-name">Website Maintenance</span>
+              <span class="service-desc">Hosting, updates, security &amp; uptime monitoring</span>
+            </div>
+            <div class="service-right">
+              <span class="badge badge-active">Active</span>
+            </div>
           </div>
-          <div class="progress-row">
-            <div class="progress-meta"><span>Keyword Rankings (Top 10)</span><span>63 keywords</span></div>
-            <div class="progress-wrap"><div class="progress-bar" style="width:63%"></div></div>
+          <div class="service-item">
+            <div class="service-info">
+              <span class="service-name">SEO</span>
+              <span class="service-desc">On-page, local SEO, rankings &amp; reporting</span>
+            </div>
+            <div class="service-right">
+              <span class="badge badge-active">Active</span>
+            </div>
           </div>
-          <div class="progress-row">
-            <div class="progress-meta"><span>Page Speed Score</span><span>87 / 100</span></div>
-            <div class="progress-wrap"><div class="progress-bar" style="width:87%"></div></div>
+          <div class="service-item">
+            <div class="service-info">
+              <span class="service-name">Google Ads</span>
+              <span class="service-desc">Campaign management &amp; optimization</span>
+            </div>
+            <div class="service-right">
+              <span class="badge badge-active">Active</span>
+            </div>
           </div>
-          <div class="progress-row">
-            <div class="progress-meta"><span>Backlink Growth</span><span>↑ 22 new links</span></div>
-            <div class="progress-wrap"><div class="progress-bar" style="width:55%"></div></div>
+          <div class="service-item" style="border-bottom:none;">
+            <div class="service-info">
+              <span class="service-name">Meta Ads</span>
+              <span class="service-desc">Facebook &amp; Instagram paid social campaigns</span>
+            </div>
+            <div class="service-right">
+              <span class="badge badge-pending">Paused</span>
+            </div>
           </div>
         </div>
       </div>
