@@ -870,7 +870,7 @@
     }
   </style>
 </head>
-<body>
+<body style="display:none">
 
 <!-- ── HEADER ── -->
 <header>
@@ -1106,63 +1106,87 @@
   </div>
 </div>
 
-<script>
-  const CUSTOMER = {
-    firstName: "Jimmy",
-    lastName:  "Flame",
-    initials:  "JF",
-    company:   "Digi Solutions",
-    email:     "jimmy@digi-solutions.com"
+<script type="module">
+  import { initializeApp }             from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged,
+           signOut, GoogleAuthProvider,
+           signInWithPopup }           from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyByncAGvxYsQOUpfaP5cTNSRtF0WGhkdm8",
+    authDomain:        "digi-dashboard-login.firebaseapp.com",
+    projectId:         "digi-dashboard-login",
+    storageBucket:     "digi-dashboard-login.firebasestorage.app",
+    messagingSenderId: "698910539777",
+    appId:             "1:698910539777:web:8be83da71e2a0863fd8000"
   };
 
-  function initCustomer() {
-    const avatar = document.getElementById('user-avatar');
-    if (avatar) { avatar.textContent = CUSTOMER.initials; avatar.title = CUSTOMER.firstName + ' ' + CUSTOMER.lastName; }
-    const welcomeEl = document.getElementById('welcome-msg');
-    if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + CUSTOMER.firstName + ' 👋';
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const db       = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  // ── Auth Guard ──────────────────────────────────────────────────────────
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.replace('login.html'); return; }
+
+    let firstName = '', lastName = '';
+    try {
+      const snap = await getDoc(doc(db, 'profiles', user.uid));
+      if (snap.exists()) {
+        firstName = snap.data().firstName || user.displayName?.split(' ')[0] || 'Client';
+        lastName  = snap.data().lastName  || '';
+      } else {
+        firstName = user.displayName?.split(' ')[0] || 'Client';
+        lastName  = user.displayName?.split(' ').slice(1).join(' ') || '';
+      }
+    } catch(e) { firstName = 'Client'; }
+
+    const initials = (firstName[0]||'')+( lastName[0]||'');
+    const avatarEl = document.getElementById('user-avatar');
+    if (avatarEl) { avatarEl.textContent = initials.toUpperCase(); avatarEl.title = firstName + ' ' + lastName; }
+
     // Pre-fill modal
     const nameEl  = document.getElementById('modal-name');
     const emailEl = document.getElementById('modal-email');
-    if (nameEl)  nameEl.value  = CUSTOMER.firstName + ' ' + CUSTOMER.lastName;
-    if (emailEl) emailEl.value = CUSTOMER.email;
-  }
+    if (nameEl)  nameEl.value  = firstName + ' ' + lastName;
+    if (emailEl) emailEl.value = user.email;
 
-  function requestPrice(service) {
+    document.body.style.display = 'flex';
+  });
+
+  // ── Logout ───────────────────────────────────────────────────────────────
+  window.handleLogout = async function() {
+    if (confirm('Are you sure you want to log out?')) {
+      await signOut(auth);
+      window.location.replace('login.html');
+    }
+  };
+
+  window.showPage = function(id) { window.location.href = 'index.html'; };
+
+  window.requestPrice = function(service) {
     document.getElementById('modal-service-name').textContent = service;
-    const modal = document.getElementById('price-modal');
-    modal.style.display = 'flex';
-  }
+    document.getElementById('price-modal').style.display = 'flex';
+  };
 
-  function closeModal() {
+  window.closeModal = function() {
     document.getElementById('price-modal').style.display = 'none';
-  }
+  };
 
-  function sendPriceRequest() {
+  window.sendPriceRequest = function() {
     const name    = document.getElementById('modal-name').value;
     const email   = document.getElementById('modal-email').value;
     const service = document.getElementById('modal-service-name').textContent;
     if (!name || !email) { alert('Please fill in your name and email.'); return; }
-    // Wire to your backend/CRM here
     window.location.href = 'mailto:support@digi-solutions.com?subject=Pricing Request: ' + encodeURIComponent(service) + '&body=Name: ' + encodeURIComponent(name) + '%0AEmail: ' + encodeURIComponent(email) + '%0AService: ' + encodeURIComponent(service);
     closeModal();
-  }
+  };
 
-  // Close modal on backdrop click
   document.getElementById('price-modal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
   });
-
-  // Nav to dashboard
-  function goToDashboard() {
-    window.location.href = 'index.html';
-  }
-
-  // Sidebar nav (back to dashboard pages)
-  function showPage(id) {
-    window.location.href = 'index.html';
-  }
-
-  document.addEventListener('DOMContentLoaded', initCustomer);
 </script>
 </body>
 </html>

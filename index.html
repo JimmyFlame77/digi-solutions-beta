@@ -640,7 +640,7 @@
     }
   </style>
 </head>
-<body>
+<body style="display:none">
 
 <!-- ── HEADER ── -->
 <header>
@@ -1246,127 +1246,141 @@
   </button>
 </nav>
 
-<script>
-  /* ─── Customer Data Object ───────────────────────────────────────────────
-     Replace these values via your backend/CMS/auth layer.
-     Example integrations: WordPress user_meta, JWT payload, PHP echo, etc.
-  ──────────────────────────────────────────────────────────────────────── */
-  const CUSTOMER = {
-    firstName:  "Jimmy",          // Pull from: <?php echo $user->first_name; ?> or JWT claim
-    lastName:   "Flame",
-    initials:   "JF",
-    company:    "Digi Solutions",
-    email:      "jimmy@digi-solutions.com"
+<script type="module">
+  import { initializeApp }             from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged,
+           signOut }                   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyByncAGvxYsQOUpfaP5cTNSRtF0WGhkdm8",
+    authDomain:        "digi-dashboard-login.firebaseapp.com",
+    projectId:         "digi-dashboard-login",
+    storageBucket:     "digi-dashboard-login.firebasestorage.app",
+    messagingSenderId: "698910539777",
+    appId:             "1:698910539777:web:8be83da71e2a0863fd8000"
   };
 
-  /* ─── Populate customer-specific UI ─────────────────────────────────── */
-  function initCustomer() {
-    const welcome = document.getElementById('welcome-msg');
-    if (welcome) welcome.textContent = 'Welcome back, ' + CUSTOMER.firstName + ' 👋';
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
 
-    const avatar = document.getElementById('user-avatar');
-    if (avatar) {
-      avatar.textContent = CUSTOMER.initials;
-      avatar.title = CUSTOMER.firstName + ' ' + CUSTOMER.lastName;
+  // ── Auth Guard ──────────────────────────────────────────────────────────
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.replace('login.html');
+      return;
     }
-  }
-  }
 
-  /* ─── Page Navigation ───────────────────────────────────────────────── */
+    // Fetch profile from Firestore
+    let firstName = '', lastName = '', businessName = '', email = user.email;
+    try {
+      const snap = await getDoc(doc(db, 'profiles', user.uid));
+      if (snap.exists()) {
+        const p    = snap.data();
+        firstName    = p.firstName    || user.displayName?.split(' ')[0] || 'Client';
+        lastName     = p.lastName     || '';
+        businessName = p.businessName || '';
+        email        = p.email        || user.email;
+      } else {
+        // Google sign-in users may not have a Firestore profile yet
+        firstName = user.displayName?.split(' ')[0] || 'Client';
+        lastName  = user.displayName?.split(' ').slice(1).join(' ') || '';
+      }
+    } catch(e) {
+      firstName = user.displayName?.split(' ')[0] || 'Client';
+    }
+
+    const initials = (firstName[0] || '') + (lastName[0] || '');
+
+    // ── Populate UI ──────────────────────────────────────────────────────
+    const welcomeEl = document.getElementById('welcome-msg');
+    if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + firstName + ' 👋';
+
+    const avatarEl = document.getElementById('user-avatar');
+    if (avatarEl) { avatarEl.textContent = initials.toUpperCase(); avatarEl.title = firstName + ' ' + lastName; }
+
+    // Reveal page now that auth is confirmed
+    document.body.style.display = 'flex';
+  });
+
+  // ── Page Navigation ─────────────────────────────────────────────────────
   const PAGE_IDS = ['dashboard','creative','leads','customers','ticket','files','inventory','sales'];
 
-  function showPage(id, btn, isMobile = false) {
+  window.showPage = function(id, btn, isMobile = false) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + id).classList.add('active');
-
     document.querySelectorAll('aside .nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
-
-    const sideIdx   = PAGE_IDS.indexOf(id);
-    const mobilePIDs= ['dashboard','creative','leads','customers','ticket','files','sales'];
-    const mobileIdx = mobilePIDs.indexOf(id);
-
+    const sideIdx    = PAGE_IDS.indexOf(id);
+    const mobilePIDs = ['dashboard','creative','leads','customers','ticket','files','sales'];
+    const mobileIdx  = mobilePIDs.indexOf(id);
     const sideBtns   = document.querySelectorAll('aside .nav-btn');
     const mobileBtns = document.querySelectorAll('.mobile-nav-btn');
-
-    if (sideBtns[sideIdx])   sideBtns[sideIdx].classList.add('active');
+    if (sideBtns[sideIdx])     sideBtns[sideIdx].classList.add('active');
     if (mobileBtns[mobileIdx]) mobileBtns[mobileIdx].classList.add('active');
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  };
 
-  /* ─── Submit Ticket ─────────────────────────────────────────────────── */
-  function submitTicket(e) {
+  // ── Logout ───────────────────────────────────────────────────────────────
+  window.handleLogout = async function() {
+    if (confirm('Are you sure you want to log out?')) {
+      await signOut(auth);
+      window.location.replace('login.html');
+    }
+  };
+
+  // ── Submit Ticket ────────────────────────────────────────────────────────
+  window.submitTicket = function(e) {
     e.preventDefault();
-    const subj = document.getElementById('t-subject').value;
-    const cat  = document.getElementById('t-category').value;
+    const subj  = document.getElementById('t-subject').value;
+    const cat   = document.getElementById('t-category').value;
     const panel = document.getElementById('ticket-list-panel');
-    const id = '#' + (Math.floor(Math.random() * 900) + 100);
-    const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const card = document.createElement('div');
+    const id    = '#' + (Math.floor(Math.random() * 900) + 100);
+    const now   = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const card  = document.createElement('div');
     card.className = 'ticket-card';
-    card.innerHTML = \`
-      <div>
-        <p class="ticket-title">\${cat} — \${subj}</p>
-        <p class="ticket-meta">Ticket \${id} &nbsp;·&nbsp; Opened \${now}</p>
-      </div>
-      <span class="badge badge-active">Open</span>
-    \`;
+    card.innerHTML = `<div><p class="ticket-title">${cat} — ${subj}</p><p class="ticket-meta">Ticket ${id} &nbsp;·&nbsp; Opened ${now}</p></div><span class="badge badge-active">Open</span>`;
     panel.appendChild(card);
     e.target.reset();
     alert('✓ Ticket submitted! Ref: ' + id);
-  }
+  };
 
-  /* ─── File Upload Handling ──────────────────────────────────────────── */
-  function handleFileSelect(input) {
-    renderFileList(Array.from(input.files));
-  }
-
-  function handleDrop(e) {
+  // ── File Upload ──────────────────────────────────────────────────────────
+  window.handleFileSelect = function(input) { renderFileList(Array.from(input.files)); };
+  window.handleDrop = function(e) {
     e.preventDefault();
     document.getElementById('drop-zone').classList.remove('drag-over');
     renderFileList(Array.from(e.dataTransfer.files));
-  }
-
+  };
   function renderFileList(files) {
     const container = document.getElementById('file-list');
     container.innerHTML = '';
     files.forEach(file => {
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.75rem;background:var(--bg-base);border:1px solid var(--border);border-radius:8px;margin-bottom:0.4rem;font-size:0.78rem;';
-      const size = file.size > 1048576 ? (file.size / 1048576).toFixed(1) + ' MB' : (file.size / 1024).toFixed(0) + ' KB';
-      item.innerHTML = \`<span style="color:var(--text-secondary);">📄 \${file.name}</span><span style="color:var(--text-muted);">\${size}</span>\`;
+      const size = file.size > 1048576 ? (file.size/1048576).toFixed(1)+' MB' : (file.size/1024).toFixed(0)+' KB';
+      item.innerHTML = `<span style="color:var(--text-secondary);">📄 ${file.name}</span><span style="color:var(--text-muted);">${size}</span>`;
       container.appendChild(item);
     });
   }
-
-  function submitFiles() {
+  window.submitFiles = function() {
     const list = document.getElementById('file-list');
-    if (!list.children.length) { alert('Please select at least one file to submit.'); return; }
+    if (!list.children.length) { alert('Please select at least one file.'); return; }
     const table = document.getElementById('submitted-files-table');
-    const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const cat = document.getElementById('file-type').value.split(' (')[0];
+    const now   = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const cat   = document.getElementById('file-type').value.split(' (')[0];
     Array.from(list.children).forEach(item => {
       const name = item.querySelector('span').textContent.replace('📄 ', '');
-      const row = document.createElement('tr');
-      row.innerHTML = \`<td>\${name}</td><td>\${cat}</td><td>\${now}</td><td><span class="badge badge-active">Received</span></td>\`;
+      const row  = document.createElement('tr');
+      row.innerHTML = `<td>${name}</td><td>${cat}</td><td>${now}</td><td><span class="badge badge-active">Received</span></td>`;
       table.prepend(row);
     });
     list.innerHTML = '';
     document.getElementById('file-note').value = '';
     alert('✓ Files submitted to Digi Solutions successfully!');
-  }
+  };
 
-
-  /* ─── Logout ─────────────────────────────────────────────────────────── */
-  function handleLogout() {
-    if (confirm('Are you sure you want to log out?')) {
-      // Replace this URL with your actual logout endpoint or login page
-      window.location.href = '/logout';
-    }
-  }
-  /* ─── Init ──────────────────────────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', initCustomer);
 </script>
 </body>
 </html>
