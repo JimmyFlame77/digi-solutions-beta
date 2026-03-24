@@ -718,7 +718,7 @@
 
       <div class="welcome-banner">
         <p class="welcome-title" id="welcome-msg">Welcome back 👋</p>
-        <p class="welcome-sub">Your Digi Solutions portal is fully operational. All systems nominal.</p>
+        <p class="welcome-sub" id="welcome-sub">Your Digi Solutions portal is fully operational. All systems nominal.</p>
       </div>
 
       <div class="stats-grid">
@@ -1272,8 +1272,7 @@
       return;
     }
 
-    // Fetch profile from Firestore
-    let firstName = '', lastName = '', businessName = '', email = user.email;
+    let firstName = '', lastName = '', businessName = '';
     try {
       const snap = await getDoc(doc(db, 'profiles', user.uid));
       if (snap.exists()) {
@@ -1281,9 +1280,7 @@
         firstName    = p.firstName    || user.displayName?.split(' ')[0] || 'Client';
         lastName     = p.lastName     || '';
         businessName = p.businessName || '';
-        email        = p.email        || user.email;
       } else {
-        // Google sign-in users may not have a Firestore profile yet
         firstName = user.displayName?.split(' ')[0] || 'Client';
         lastName  = user.displayName?.split(' ').slice(1).join(' ') || '';
       }
@@ -1293,34 +1290,24 @@
 
     const initials = (firstName[0] || '') + (lastName[0] || '');
 
-    // ── Populate UI ──────────────────────────────────────────────────────
+    // ── Populate UI ─────────────────────────────────────────────────────
     const welcomeEl = document.getElementById('welcome-msg');
-    if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + firstName + ' 👋';
+    if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + firstName + '! 👋';
+
+    const subEl = document.getElementById('welcome-sub');
+    if (subEl) subEl.textContent = businessName
+      ? businessName + ' is ready for blast off! 🚀'
+      : 'Your Digi Solutions portal is fully operational.';
 
     const avatarEl = document.getElementById('user-avatar');
-    if (avatarEl) { avatarEl.textContent = initials.toUpperCase(); avatarEl.title = firstName + ' ' + lastName; }
+    if (avatarEl) {
+      avatarEl.textContent = initials.toUpperCase() || '?';
+      avatarEl.title = firstName + ' ' + lastName;
+    }
 
-    // Reveal page now that auth is confirmed
+    // Reveal page
     document.body.style.display = 'flex';
   });
-
-  // ── Page Navigation ─────────────────────────────────────────────────────
-  const PAGE_IDS = ['dashboard','creative','leads','customers','ticket','files','inventory','sales'];
-
-  window.showPage = function(id, btn, isMobile = false) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + id).classList.add('active');
-    document.querySelectorAll('aside .nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
-    const sideIdx    = PAGE_IDS.indexOf(id);
-    const mobilePIDs = ['dashboard','creative','leads','customers','ticket','files','sales'];
-    const mobileIdx  = mobilePIDs.indexOf(id);
-    const sideBtns   = document.querySelectorAll('aside .nav-btn');
-    const mobileBtns = document.querySelectorAll('.mobile-nav-btn');
-    if (sideBtns[sideIdx])     sideBtns[sideIdx].classList.add('active');
-    if (mobileBtns[mobileIdx]) mobileBtns[mobileIdx].classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   // ── Logout ───────────────────────────────────────────────────────────────
   window.handleLogout = async function() {
@@ -1328,6 +1315,27 @@
       await signOut(auth);
       window.location.replace('login.html');
     }
+  };
+
+  // ── Page Navigation ──────────────────────────────────────────────────────
+  const PAGE_IDS     = ['dashboard','creative','leads','customers','ticket','files','inventory','sales'];
+  const MOBILE_IDS   = ['dashboard','creative','leads','customers','ticket','files','sales'];
+
+  window.showPage = function(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + id);
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('aside .nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+
+    const sideIdx   = PAGE_IDS.indexOf(id);
+    const mobileIdx = MOBILE_IDS.indexOf(id);
+    const sideBtns   = document.querySelectorAll('aside .nav-btn');
+    const mobileBtns = document.querySelectorAll('.mobile-nav-btn');
+    if (sideBtns[sideIdx])     sideBtns[sideIdx].classList.add('active');
+    if (mobileBtns[mobileIdx]) mobileBtns[mobileIdx].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // ── Submit Ticket ────────────────────────────────────────────────────────
@@ -1380,7 +1388,6 @@
     document.getElementById('file-note').value = '';
     alert('✓ Files submitted to Digi Solutions successfully!');
   };
-
 </script>
 </body>
 </html>
