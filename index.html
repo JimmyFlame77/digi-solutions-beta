@@ -638,6 +638,117 @@
       .page-actions { width: 100%; }
       .page-actions .btn { flex: 1; justify-content: center; }
     }
+
+    /* ── PROFILE FLYOUT ── */
+    .avatar-wrap { position: relative; }
+    .avatar { cursor: pointer; user-select: none; transition: box-shadow var(--transition); }
+    .avatar:hover { box-shadow: 0 0 0 3px rgba(0,200,255,0.5), var(--neon-glow); }
+
+    .profile-flyout {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 300px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,200,255,0.1);
+      z-index: 300;
+      overflow: hidden;
+    }
+    .profile-flyout.open { display: block; }
+    .profile-flyout::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon), transparent);
+      box-shadow: 0 0 10px var(--neon);
+    }
+
+    .flyout-header {
+      padding: 1.25rem 1.25rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .flyout-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #005f8a, #0099cc);
+      border: 2px solid var(--border-active);
+      box-shadow: var(--neon-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 800;
+      color: #fff; letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+    .flyout-avatar img {
+      width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+    }
+    .flyout-name {
+      font-size: 0.88rem; font-weight: 700; color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .flyout-business {
+      font-size: 0.7rem; color: var(--neon);
+      text-shadow: var(--neon-glow); margin-top: 0.1rem;
+    }
+    .flyout-email {
+      font-size: 0.68rem; color: var(--text-muted); margin-top: 0.1rem;
+    }
+
+    .flyout-body { padding: 1rem 1.25rem; }
+
+    .flyout-section-label {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--text-muted); margin-bottom: 0.6rem;
+    }
+
+    .flyout-field { margin-bottom: 0.65rem; }
+    .flyout-field label {
+      display: block; font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.3rem;
+    }
+    .flyout-field input {
+      width: 100%; background: var(--bg-base); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.5rem 0.75rem;
+      color: var(--text-primary); font-size: 0.8rem; font-family: var(--font);
+      outline: none; transition: var(--transition);
+    }
+    .flyout-field input:focus { border-color: var(--border-active); box-shadow: 0 0 0 3px rgba(0,200,255,0.08); }
+    .flyout-field input:read-only { opacity: 0.45; cursor: not-allowed; }
+
+    .flyout-save-btn {
+      width: 100%; padding: 0.55rem;
+      background: linear-gradient(135deg, #005f8a, #0099cc);
+      color: #fff; border: 1px solid var(--border-active);
+      border-radius: var(--radius); font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.06em; cursor: pointer; font-family: var(--font);
+      box-shadow: var(--neon-glow); transition: var(--transition);
+      margin-top: 0.25rem;
+    }
+    .flyout-save-btn:hover { box-shadow: var(--neon-glow-lg); transform: translateY(-1px); }
+
+    .flyout-save-msg {
+      font-size: 0.7rem; color: #00ff9d; text-align: center;
+      margin-top: 0.5rem; display: none;
+    }
+
+    .flyout-footer {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .flyout-logout-btn {
+      width: 100%; padding: 0.5rem;
+      background: linear-gradient(135deg, #5a0000, #cc0000);
+      color: #fff; border: 1px solid rgba(255,60,60,0.65);
+      border-radius: var(--radius); font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.06em; cursor: pointer; font-family: var(--font);
+      box-shadow: 0 0 8px rgba(255,40,40,0.7), 0 0 20px rgba(255,40,40,0.35);
+      transition: var(--transition);
+    }
+    .flyout-logout-btn:hover { box-shadow: 0 0 14px rgba(255,40,40,0.9), 0 0 40px rgba(255,40,40,0.4); transform: translateY(-1px); }
   </style>
 </head>
 <body style="display:none">
@@ -655,7 +766,43 @@
       <span class="status-dot"></span>
       <span>System Online</span>
     </div>
-    <div class="avatar" id="user-avatar" title="My Account">JS</div>
+    <div class="avatar-wrap">
+    <div class="avatar" id="user-avatar" title="My Account" onclick="toggleFlyout()">JS</div>
+    <div class="profile-flyout" id="profile-flyout">
+      <div class="flyout-header">
+        <div class="flyout-avatar" id="flyout-avatar">JS</div>
+        <div>
+          <p class="flyout-name"  id="flyout-name">Loading...</p>
+          <p class="flyout-business" id="flyout-business"></p>
+          <p class="flyout-email"    id="flyout-email"></p>
+        </div>
+      </div>
+      <div class="flyout-body">
+        <p class="flyout-section-label">Edit Profile</p>
+        <div class="flyout-field">
+          <label>First Name</label>
+          <input type="text" id="flyout-first" placeholder="First name" />
+        </div>
+        <div class="flyout-field">
+          <label>Last Name</label>
+          <input type="text" id="flyout-last" placeholder="Last name" />
+        </div>
+        <div class="flyout-field">
+          <label>Business Name</label>
+          <input type="text" id="flyout-biz" placeholder="Business name" />
+        </div>
+        <div class="flyout-field">
+          <label>Email (cannot change)</label>
+          <input type="email" id="flyout-email-field" readonly />
+        </div>
+        <button class="flyout-save-btn" onclick="saveProfile()">Save Changes</button>
+        <p class="flyout-save-msg" id="flyout-save-msg">✓ Profile updated!</p>
+      </div>
+      <div class="flyout-footer">
+        <button class="flyout-logout-btn" onclick="handleLogout()">⏻ Log Out</button>
+      </div>
+    </div>
+  </div>
   </div>
 </header>
 
@@ -1247,10 +1394,11 @@
 </nav>
 
 <script type="module">
-  import { initializeApp }             from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { initializeApp }                    from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
   import { getAuth, onAuthStateChanged,
-           signOut }                   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+           signOut }                          from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc,
+           updateDoc }                        from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyByncAGvxYsQOUpfaP5cTNSRtF0WGhkdm8",
@@ -1264,33 +1412,52 @@
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
+  let currentUID = null;
 
-  // ── Auth Guard ──────────────────────────────────────────────────────────
+  // ── Auth Guard ────────────────────────────────────────────────────────────
   onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.replace('login.html');
-      return;
-    }
+    if (!user) { window.location.replace('login.html'); return; }
+    currentUID = user.uid;
 
-    let firstName = '', lastName = '', businessName = '';
+    let firstName = '', lastName = '', businessName = '', email = user.email;
     try {
       const snap = await getDoc(doc(db, 'profiles', user.uid));
       if (snap.exists()) {
-        const p    = snap.data();
+        const p  = snap.data();
         firstName    = p.firstName    || user.displayName?.split(' ')[0] || 'Client';
         lastName     = p.lastName     || '';
         businessName = p.businessName || '';
+        email        = p.email        || user.email;
       } else {
         firstName = user.displayName?.split(' ')[0] || 'Client';
         lastName  = user.displayName?.split(' ').slice(1).join(' ') || '';
       }
-    } catch(e) {
-      firstName = user.displayName?.split(' ')[0] || 'Client';
-    }
+    } catch(e) { firstName = 'Client'; }
 
-    const initials = (firstName[0] || '') + (lastName[0] || '');
+    const initials = (firstName[0]||'') + (lastName[0]||'');
 
-    // ── Populate UI ─────────────────────────────────────────────────────
+    // ── Header + Welcome ────────────────────────────────────────────────
+    const avatarEl = document.getElementById('user-avatar');
+    if (avatarEl) { avatarEl.textContent = initials.toUpperCase() || '?'; avatarEl.title = firstName + ' ' + lastName; }
+
+    const flyoutAv = document.getElementById('flyout-avatar');
+    if (flyoutAv) flyoutAv.textContent = initials.toUpperCase() || '?';
+
+    const flyoutName = document.getElementById('flyout-name');
+    if (flyoutName) flyoutName.textContent = firstName + ' ' + lastName;
+
+    const flyoutBiz = document.getElementById('flyout-business');
+    if (flyoutBiz) flyoutBiz.textContent = businessName || '';
+
+    const flyoutEmailEl = document.getElementById('flyout-email');
+    if (flyoutEmailEl) flyoutEmailEl.textContent = email;
+
+    // Pre-fill edit fields
+    const ff = document.getElementById('flyout-first'); if (ff) ff.value = firstName;
+    const fl = document.getElementById('flyout-last');  if (fl) fl.value = lastName;
+    const fb = document.getElementById('flyout-biz');   if (fb) fb.value = businessName;
+    const fe = document.getElementById('flyout-email-field'); if (fe) fe.value = email;
+
     const welcomeEl = document.getElementById('welcome-msg');
     if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + firstName + '! 👋';
 
@@ -1299,17 +1466,50 @@
       ? businessName + ' is ready for blast off! 🚀'
       : 'Your Digi Solutions portal is fully operational.';
 
-    const avatarEl = document.getElementById('user-avatar');
-    if (avatarEl) {
-      avatarEl.textContent = initials.toUpperCase() || '?';
-      avatarEl.title = firstName + ' ' + lastName;
-    }
-
-    // Reveal page
     document.body.style.display = 'flex';
   });
 
-  // ── Logout ───────────────────────────────────────────────────────────────
+  // ── Flyout Toggle ────────────────────────────────────────────────────────
+  window.toggleFlyout = function() {
+    document.getElementById('profile-flyout').classList.toggle('open');
+  };
+  // Close flyout on outside click
+  document.addEventListener('click', function(e) {
+    const wrap = document.querySelector('.avatar-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('profile-flyout').classList.remove('open');
+    }
+  });
+
+  // ── Save Profile ─────────────────────────────────────────────────────────
+  window.saveProfile = async function() {
+    const firstName    = document.getElementById('flyout-first').value.trim();
+    const lastName     = document.getElementById('flyout-last').value.trim();
+    const businessName = document.getElementById('flyout-biz').value.trim();
+    if (!firstName) { alert('First name cannot be empty.'); return; }
+
+    try {
+      await updateDoc(doc(db, 'profiles', currentUID), { firstName, lastName, businessName });
+
+      // Update header live without page reload
+      const initials = (firstName[0]||'') + (lastName[0]||'');
+      document.getElementById('user-avatar').textContent  = initials.toUpperCase();
+      document.getElementById('flyout-avatar').textContent = initials.toUpperCase();
+      document.getElementById('flyout-name').textContent   = firstName + ' ' + lastName;
+      document.getElementById('flyout-business').textContent = businessName;
+      document.getElementById('welcome-msg').textContent   = 'Welcome back, ' + firstName + '! 👋';
+      const subEl = document.getElementById('welcome-sub');
+      if (subEl) subEl.textContent = businessName ? businessName + ' is ready for blast off! 🚀' : 'Your Digi Solutions portal is fully operational.';
+
+      const msg = document.getElementById('flyout-save-msg');
+      msg.style.display = 'block';
+      setTimeout(() => { msg.style.display = 'none'; }, 3000);
+    } catch(e) {
+      alert('Failed to save. Please try again.');
+    }
+  };
+
+  // ── Logout ────────────────────────────────────────────────────────────────
   window.handleLogout = async function() {
     if (confirm('Are you sure you want to log out?')) {
       await signOut(auth);
@@ -1317,18 +1517,16 @@
     }
   };
 
-  // ── Page Navigation ──────────────────────────────────────────────────────
-  const PAGE_IDS     = ['dashboard','creative','leads','customers','ticket','files','inventory','sales'];
-  const MOBILE_IDS   = ['dashboard','creative','leads','customers','ticket','files','sales'];
+  // ── Page Navigation ───────────────────────────────────────────────────────
+  const PAGE_IDS   = ['dashboard','creative','leads','customers','ticket','files','inventory','sales'];
+  const MOBILE_IDS = ['dashboard','creative','leads','customers','ticket','files','sales'];
 
   window.showPage = function(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + id);
     if (target) target.classList.add('active');
-
     document.querySelectorAll('aside .nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
-
     const sideIdx   = PAGE_IDS.indexOf(id);
     const mobileIdx = MOBILE_IDS.indexOf(id);
     const sideBtns   = document.querySelectorAll('aside .nav-btn');
@@ -1336,9 +1534,10 @@
     if (sideBtns[sideIdx])     sideBtns[sideIdx].classList.add('active');
     if (mobileBtns[mobileIdx]) mobileBtns[mobileIdx].classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('profile-flyout').classList.remove('open');
   };
 
-  // ── Submit Ticket ────────────────────────────────────────────────────────
+  // ── Submit Ticket ─────────────────────────────────────────────────────────
   window.submitTicket = function(e) {
     e.preventDefault();
     const subj  = document.getElementById('t-subject').value;
@@ -1348,13 +1547,13 @@
     const now   = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const card  = document.createElement('div');
     card.className = 'ticket-card';
-    card.innerHTML = `<div><p class="ticket-title">${cat} — ${subj}</p><p class="ticket-meta">Ticket ${id} &nbsp;·&nbsp; Opened ${now}</p></div><span class="badge badge-active">Open</span>`;
+    card.innerHTML = `<div><p class="ticket-title">${cat} — ${subj}</p><p class="ticket-meta">Ticket ${id} · Opened ${now}</p></div><span class="badge badge-active">Open</span>`;
     panel.appendChild(card);
     e.target.reset();
     alert('✓ Ticket submitted! Ref: ' + id);
   };
 
-  // ── File Upload ──────────────────────────────────────────────────────────
+  // ── File Upload ───────────────────────────────────────────────────────────
   window.handleFileSelect = function(input) { renderFileList(Array.from(input.files)); };
   window.handleDrop = function(e) {
     e.preventDefault();
